@@ -1,0 +1,5 @@
+{% extends 'base.html' %}{% block content %}
+<h1>可報名的活動</h1>
+{% if request.query_params.get('registered') %}<p class="notice">報名已送出！</p>{% endif %}
+{% for event in events %}<article><h2>{{ event.title }}</h2><p>{{ event.description or '' }}</p><p>時間：{{ event.event_date }}</p><p>地點：{{ event.location or '未提供' }}</p><p><a class="button" href="/events/{{ event.event_id }}/register">我要報名</a> <a href="/events/{{ event.event_id }}/attendees">查看報名名單</a></p></article>{% else %}<p>目前沒有可報名的活動</p>{% endfor %}
+{% endblock %}

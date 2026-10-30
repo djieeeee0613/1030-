@@ -1,0 +1,1 @@
+{% extends 'base.html' %}{% block title %}活動報名{% endblock %}{% block content %}<h1>報名：{{ event.title }}</h1><form method="post" action="/events/{{ event.event_id }}/register"><label>姓名 <input name="name" required maxlength="50"></label><label>聯絡電話 <input name="phone" type="tel" required maxlength="20"></label><button type="submit">送出報名</button></form>{% endblock %}
