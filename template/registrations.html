@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% set active = 'mine' %}
+{% block title %}查看我的報名{% endblock %}
+{% block content %}
+    <a class="back" href="/">← 返回活動列表</a>
+
+    {% set just_done = (rows | selectattr('registration_id', 'equalto', new_id) | list | first) if rows and new_id else none %}
+    {% if just_done %}
+    <div class="alert alert-ok" role="status"><strong>報名成功！</strong>已為「{{ just_done.name }}」報名「{{ just_done.title }}」。</div>
+    {% endif %}
+
+    <section class="panel">
+      <h1 class="h-page">查看我的報名</h1>
+      <form class="lookup" method="get" action="/registrations">
+        <div class="lookup-field">
+          <label for="phone">連絡電話</label>
+          <input id="phone" name="phone" type="tel" inputmode="tel" required
+                 placeholder="輸入報名時填的電話" value="{{ phone }}">
+        </div>
+        <button class="btn" type="submit">查詢</button>
+      </form>
+    </section>
+
+    {% if error or rows is not none %}
+    <h2 class="section-title">報名的活動{% if rows is not none %} <span class="count">{{ rows|length }}</span>{% endif %}</h2>
+    {% if error %}
+      <div class="alert alert-error" role="alert">{{ error }}</div>
+    {% elif rows|length == 0 %}
+      <p class="empty">這支電話目前沒有任何報名紀錄。<br><a href="/">去看看可報名的活動 →</a></p>
+    {% else %}
+      <ul class="list">
+        {% for r in rows %}
+        <li class="row{{ ' row-new' if r.registration_id == new_id }}">
+          <div class="row-main">
+            <div class="card-no">No.{{ r.event_id|pad }}</div>
+            <h3>{{ r.title }}</h3>
+            <p class="row-sub">{{ r.event_date|fmt_date }}　·　{{ r.location }}</p>
+          </div>
+          <div class="row-side">
+            <span class="badge">{{ r.name }}</span>
+            <span class="stamp">報名時間 {{ r.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
+          </div>
+        </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+    {% endif %}
+{% endblock %}

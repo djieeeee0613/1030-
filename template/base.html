@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{% endblock %}｜活動報名平台</title>
+  <style>
+:root {
+  --bg: #171512;
+  --panel: #211e19;
+  --panel-2: #2a2620;
+  --line: #3b362d;
+  --text: #ece6da;
+  --muted: #a69e8f;
+  --rust: #d9622b;
+  --rust-dark: #b84d1b;
+  --amber: #f2b134;
+  --ok: #7fb069;
+  --err: #ef6a5b;
+  --radius: 6px;
+}
+* { box-sizing: border-box; }
+html { color-scheme: dark; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 16px/1.7 "Noto Sans TC", "Microsoft JhengHei", "PingFang TC", system-ui, sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+a { color: var(--amber); }
+
+.site-header {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  padding: 14px 20px; max-width: 1040px; width: 100%; margin: 0 auto;
+}
+.brand { color: var(--text); text-decoration: none; font-weight: 800; letter-spacing: .08em; }
+.brand-mark { color: var(--rust); }
+.site-header nav { display: flex; gap: 6px; }
+.site-header nav a {
+  color: var(--muted); text-decoration: none; padding: 6px 12px; border-radius: var(--radius); font-size: 15px;
+}
+.site-header nav a:hover { color: var(--text); background: var(--panel); }
+.site-header nav a.on { color: var(--text); background: var(--panel-2); }
+
+.wrap { max-width: 1040px; width: 100%; margin: 0 auto; padding: 8px 20px 56px; flex: 1; }
+.site-footer { text-align: center; color: var(--muted); font-size: 13px; padding: 20px; border-top: 1px solid var(--line); }
+
+/* Hero */
+.hero { padding: 44px 0 28px; }
+.eyebrow { margin: 0 0 10px; color: var(--rust); font: 700 13px/1 ui-monospace, Consolas, monospace; letter-spacing: .3em; }
+.hero h1 { margin: 0 0 22px; font-size: clamp(28px, 5.2vw, 46px); line-height: 1.3; font-weight: 800; }
+.hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+
+.section-title {
+  display: flex; align-items: center; gap: 10px;
+  margin: 28px 0 16px; padding-bottom: 10px; border-bottom: 1px solid var(--line);
+  font-size: 20px;
+}
+.count {
+  background: var(--rust); color: #fff; font-size: 13px; font-weight: 700;
+  min-width: 24px; height: 24px; padding: 0 7px; border-radius: 12px;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+
+/* 活動卡片 */
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 18px; }
+.card {
+  background: var(--panel); border: 1px solid var(--line); border-top: 3px solid var(--rust);
+  border-radius: var(--radius); padding: 20px; display: flex; flex-direction: column;
+  transition: transform .15s, border-color .15s;
+}
+.card-new { border-color: var(--ok); border-top-color: var(--ok); }
+.card:hover { transform: translateY(-3px); border-color: var(--rust); }
+.card h3 { margin: 4px 0 8px; font-size: 20px; line-height: 1.4; }
+.card .desc { flex: 1; }
+.card-no { font: 700 12px/1 ui-monospace, Consolas, monospace; letter-spacing: .2em; color: var(--amber); }
+.desc { color: var(--muted); margin: 0 0 14px; }
+
+.meta { margin: 0 0 18px; display: grid; gap: 6px; }
+.meta div { display: grid; grid-template-columns: 64px 1fr; gap: 8px; font-size: 14.5px; }
+.meta dt { color: var(--muted); }
+.meta dd { margin: 0; }
+
+/* 按鈕 */
+.btn {
+  display: inline-block; text-align: center; cursor: pointer; text-decoration: none;
+  background: var(--rust); color: #fff; border: 2px solid var(--rust);
+  padding: 10px 20px; border-radius: var(--radius); font: 700 16px/1.4 inherit; font-family: inherit;
+  transition: background .15s, border-color .15s, color .15s;
+}
+.btn:hover { background: var(--rust-dark); border-color: var(--rust-dark); }
+.btn-ghost { background: transparent; color: var(--amber); border-color: var(--amber); }
+.btn-ghost:hover { background: var(--amber); border-color: var(--amber); color: #1b1812; }
+.btn-block { display: block; width: 100%; margin-top: 18px; padding: 12px; }
+.btn:focus-visible, input:focus-visible, a:focus-visible { outline: 3px solid var(--amber); outline-offset: 2px; }
+
+/* 面板與表單 */
+.back { display: inline-block; margin: 18px 0 6px; text-decoration: none; color: var(--muted); }
+.back:hover { color: var(--amber); }
+.split { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; align-items: start; margin-top: 8px; }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; }
+.form-narrow { max-width: 640px; margin-top: 8px; }
+.panel.center { text-align: center; margin-top: 32px; }
+.panel-title, .h-page { margin: 0 0 16px; font-size: 22px; }
+.h-event { margin: 6px 0 10px; font-size: 26px; line-height: 1.35; }
+.summary { border-top: 3px solid var(--rust); }
+
+label { display: block; margin: 14px 0 6px; font-weight: 700; font-size: 15px; }
+input, textarea {
+  width: 100%; padding: 11px 12px; font: inherit; color: var(--text);
+  background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius);
+}
+input::placeholder, textarea::placeholder { color: #6f685b; }
+input:focus, textarea:focus { border-color: var(--amber); }
+textarea { resize: vertical; min-height: 110px; line-height: 1.6; }
+.btn-row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 18px; }
+.hint { margin: 6px 0 0; color: var(--muted); font-size: 13.5px; }
+
+.alert { padding: 12px 14px; border-radius: var(--radius); margin: 0 0 16px; border: 1px solid; }
+.alert-error { background: rgba(239,106,91,.1); border-color: var(--err); color: #ffb3aa; }
+.alert-ok { background: rgba(127,176,105,.12); border-color: var(--ok); color: #cfe9c3; margin-top: 12px; }
+
+/* 查詢 */
+.lookup { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; }
+.lookup-field { flex: 1; min-width: 220px; }
+.lookup label { margin-top: 0; }
+
+.list { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; }
+.row {
+  display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap;
+  background: var(--panel); border: 1px solid var(--line); border-left: 4px solid var(--rust);
+  border-radius: var(--radius); padding: 16px 20px;
+}
+.row-new { border-left-color: var(--ok); background: var(--panel-2); }
+.row h3 { margin: 4px 0 2px; font-size: 18px; }
+.row-sub { margin: 0; color: var(--muted); font-size: 14.5px; }
+.row-side { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+.badge { background: var(--panel-2); border: 1px solid var(--line); padding: 2px 10px; border-radius: 12px; font-size: 14px; }
+.stamp { color: var(--muted); font: 12.5px/1 ui-monospace, Consolas, monospace; }
+.empty { color: var(--muted); text-align: center; padding: 36px 0; }
+
+@media (max-width: 720px) {
+  .split { grid-template-columns: 1fr; }
+  .site-header { flex-wrap: wrap; }
+  .row-side { align-items: flex-start; }
+}
+@media (prefers-reduced-motion: reduce) { .card { transition: none; } .card:hover { transform: none; } }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="/"><span class="brand-mark">●</span> 活動報名平台</a>
+    <nav>
+      <a href="/" class="{{ 'on' if active == 'home' }}">活動列表</a>
+      <a href="/events/new" class="{{ 'on' if active == 'new' }}">新增活動</a>
+      <a href="/registrations" class="{{ 'on' if active == 'mine' }}">查看我的報名</a>
+    </nav>
+  </header>
+  <main class="wrap">
+{% block content %}{% endblock %}
+  </main>
+  <footer class="site-footer">活動報名平台</footer>
+</body>
+</html>

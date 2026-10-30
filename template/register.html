@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}報名：{{ event.title }}{% endblock %}
+{% block content %}
+    <a class="back" href="/">← 返回活動列表</a>
+    <div class="split">
+      <section class="panel summary">
+        <div class="card-no">No.{{ event.event_id|pad }}</div>
+        <h1 class="h-event">{{ event.title }}</h1>
+        <p class="desc">{{ event.description }}</p>
+        <dl class="meta">
+          <div><dt>日期</dt><dd>{{ event.event_date|fmt_date }}</dd></div>
+          <div><dt>地點</dt><dd>{{ event.location }}</dd></div>
+          <div><dt>已報名</dt><dd>{{ event.reg_count }} 人</dd></div>
+        </dl>
+      </section>
+
+      <section class="panel">
+        <h2 class="panel-title">填寫報名資料</h2>
+        {% if error %}<div class="alert alert-error" role="alert">{{ error }}</div>{% endif %}
+        <form method="post" action="/events/{{ event.event_id }}/register" novalidate>
+          <label for="name">姓名</label>
+          <input id="name" name="name" type="text" maxlength="50" required
+                 autocomplete="name" placeholder="例如：王小明" value="{{ values.name }}">
+
+          <label for="phone">連絡電話</label>
+          <input id="phone" name="phone" type="tel" inputmode="tel" required
+                 autocomplete="tel" placeholder="例如：0912345678" value="{{ values.phone }}">
+          <p class="hint">之後可用這支電話查詢你報名過的活動。</p>
+
+          <button class="btn btn-block" type="submit">送出報名</button>
+        </form>
+      </section>
+    </div>
+{% endblock %}

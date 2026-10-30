@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% set active = 'home' %}
+{% block title %}活動列表{% endblock %}
+{% block content %}
+    <section class="hero">
+      <p class="eyebrow">EVENTS</p>
+      <h1>選一場活動，<br>留下姓名與電話就能報名</h1>
+      <div class="hero-actions">
+        <a class="btn" href="/events/new">＋ 新增活動</a>
+        <a class="btn btn-ghost" href="/registrations">查看我的報名</a>
+      </div>
+    </section>
+
+    {% if added_event %}
+    <div class="alert alert-ok" role="status"><strong>活動已新增！</strong>「{{ added_event.title }}」已開放報名。</div>
+    {% endif %}
+
+    <h2 class="section-title">可報名的活動 <span class="count">{{ events|length }}</span></h2>
+    {% if events %}
+    <div class="grid">
+      {% for e in events %}
+      <article class="card{{ ' card-new' if added_event and added_event.event_id == e.event_id }}">
+        <div class="card-no">No.{{ e.event_id|pad }}</div>
+        <h3>{{ e.title }}</h3>
+        <p class="desc">{{ e.description }}</p>
+        <dl class="meta">
+          <div><dt>日期</dt><dd>{{ e.event_date|fmt_date }}</dd></div>
+          <div><dt>地點</dt><dd>{{ e.location }}</dd></div>
+          <div><dt>已報名</dt><dd>{{ e.reg_count }} 人</dd></div>
+        </dl>
+        <a class="btn" href="/events/{{ e.event_id }}">我要報名 <span aria-hidden="true">→</span></a>
+      </article>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p class="empty">目前沒有開放報名的活動。</p>
+    {% endif %}
+{% endblock %}

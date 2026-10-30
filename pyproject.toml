@@ -1,0 +1,9 @@
+[project]
+name = "ruins-signup"
+version = "0.1.0"
+description = "活動報名平台（基本款）- 使用端"
+requires-python = ">=3.10"
+dependencies = [
+    "flask>=3.0",
+    "psycopg[binary]>=3.2",  # PostgreSQL 連線
+]

@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% set active = 'new' %}
+{% block title %}新增活動{% endblock %}
+{% block content %}
+    <a class="back" href="/">← 返回活動列表</a>
+    <section class="panel form-narrow">
+      <p class="eyebrow">NEW EVENT</p>
+      <h1 class="h-page">新增活動</h1>
+      {% if error %}<div class="alert alert-error" role="alert">{{ error }}</div>{% endif %}
+      <form method="post" action="/events/new" novalidate>
+        <label for="title">活動名稱</label>
+        <input id="title" name="title" type="text" maxlength="100" required
+               placeholder="例如：程式設計入門工作坊" value="{{ values.title }}">
+
+        <label for="event_date">活動日期與時間</label>
+        <input id="event_date" name="event_date" type="datetime-local" required value="{{ values.event_date }}">
+
+        <label for="location">活動地點</label>
+        <input id="location" name="location" type="text" maxlength="150" required
+               placeholder="例如：資訊大樓 301 教室" value="{{ values.location }}">
+
+        <label for="description">活動說明</label>
+        <textarea id="description" name="description" maxlength="1000"
+                  placeholder="集合方式、注意事項、需要自備的物品…（可留空）">{{ values.description }}</textarea>
+        <p class="hint">新增後會立刻出現在首頁，開放報名。</p>
+
+        <div class="btn-row">
+          <button class="btn" type="submit">新增活動</button>
+          <a class="btn btn-ghost" href="/">取消</a>
+        </div>
+      </form>
+    </section>
+{% endblock %}
