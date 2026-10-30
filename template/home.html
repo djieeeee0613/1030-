@@ -28,11 +28,30 @@
           <div><dt>地點</dt><dd>{{ e.location }}</dd></div>
           <div><dt>已報名</dt><dd>{{ e.reg_count }} 人</dd></div>
         </dl>
-        <a class="btn" href="/events/{{ e.event_id }}">我要報名 <span aria-hidden="true">→</span></a>
+        <div class="card-actions">
+          <a class="btn" href="/events/{{ e.event_id }}">我要報名 <span aria-hidden="true">→</span></a>
+          <a class="btn btn-ghost" href="/events/{{ e.event_id }}/registrations">報名清單</a>
+        </div>
       </article>
       {% endfor %}
     </div>
     {% else %}
     <p class="empty">目前沒有開放報名的活動。</p>
+    {% endif %}
+
+    {% if closed_events %}
+    <h2 class="section-title">已截止報名 <span class="count count-muted">{{ closed_events|length }}</span></h2>
+    <ul class="list">
+      {% for e in closed_events %}
+      <li class="row row-closed">
+        <div class="row-main">
+          <div class="card-no">No.{{ e.event_id|pad }}</div>
+          <h3>{{ e.title }} <span class="badge badge-closed">已截止</span></h3>
+          <p class="row-sub">{{ e.event_date|fmt_date }}　·　{{ e.location }}　·　報名 {{ e.reg_count }} 人</p>
+        </div>
+        <a class="btn btn-ghost" href="/events/{{ e.event_id }}/registrations">報名清單</a>
+      </li>
+      {% endfor %}
+    </ul>
     {% endif %}
 {% endblock %}

@@ -33,7 +33,7 @@
         <li class="row{{ ' row-new' if r.registration_id == new_id }}">
           <div class="row-main">
             <div class="card-no">No.{{ r.event_id|pad }}</div>
-            <h3>{{ r.title }}</h3>
+            <h3>{{ r.title }}{% if r.status == 'closed' %} <span class="badge badge-closed">已截止</span>{% endif %}</h3>
             <p class="row-sub">{{ r.event_date|fmt_date }}　·　{{ r.location }}</p>
           </div>
           <div class="row-side">

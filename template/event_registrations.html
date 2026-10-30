@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}報名清單：{{ event.title }}{% endblock %}
+{% block content %}
+    <a class="back" href="/">← 返回活動列表</a>
+
+    {% if changed == 'closed' %}
+    <div class="alert alert-ok" role="status"><strong>已截止報名。</strong>這個活動不會再接受新的報名。</div>
+    {% elif changed == 'open' %}
+    <div class="alert alert-ok" role="status"><strong>已重新開放報名。</strong>活動已回到首頁的可報名清單。</div>
+    {% endif %}
+
+    <div class="split">
+      <section class="panel summary">
+        <div class="card-no">No.{{ event.event_id|pad }}</div>
+        <h1 class="h-event">{{ event.title }}
+          {% if event.status == 'open' %}<span class="badge badge-open">報名中</span>{% else %}<span class="badge badge-closed">已截止</span>{% endif %}
+        </h1>
+        <dl class="meta">
+          <div><dt>日期</dt><dd>{{ event.event_date|fmt_date }}</dd></div>
+          <div><dt>地點</dt><dd>{{ event.location }}</dd></div>
+        </dl>
+
+        <div class="stat"><span class="stat-num">{{ rows|length }}</span><span class="stat-label">人　目前報名人數</span></div>
+
+        {% if event.status == 'open' %}
+        <form method="post" action="/events/{{ event.event_id }}/close"
+              onsubmit="return confirm('確定要截止「{{ event.title }}」的報名嗎？截止後將無法再報名。');">
+          <div class="btn-row">
+            <a class="btn" href="/events/{{ event.event_id }}">我要報名</a>
+            <button class="btn btn-danger" type="submit">截止報名</button>
+          </div>
+        </form>
+        {% else %}
+        <form method="post" action="/events/{{ event.event_id }}/reopen">
+          <div class="btn-row">
+            <button class="btn btn-ghost" type="submit">重新開放報名</button>
+          </div>
+        </form>
+        {% endif %}
+      </section>
+
+      <section class="panel">
+        <h2 class="panel-title">報名清單</h2>
+        {% if rows %}
+        <div class="table-wrap">
+          <table class="reg">
+            <thead><tr><th>#</th><th>姓名</th><th>連絡電話</th><th>報名時間</th></tr></thead>
+            <tbody>
+              {% for r in rows %}
+              <tr>
+                <td class="num">{{ loop.index }}</td>
+                <td>{{ r.name }}</td>
+                <td>{{ r.phone }}</td>
+                <td class="num">{{ r.created_at.strftime('%m/%d %H:%M') }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <p class="empty">目前還沒有人報名。</p>
+        {% endif %}
+      </section>
+    </div>
+{% endblock %}

@@ -8,7 +8,13 @@ from route import PHONE_RE, normalize_phone
 
 bp = Blueprint("events", __name__)
 
-NOT_FOUND_MSG = "找不到這個活動，或活動已截止報名。"
+NOT_FOUND_MSG = "找不到這個活動。"
+CLOSED_MSG = "這個活動已截止報名，無法再報名。"
+
+
+def _closed_page(event):
+    return render_template("error.html", title="已截止報名",
+                           message=f"「{event['title']}」{CLOSED_MSG}"), 403
 
 
 @bp.get("/")
@@ -16,7 +22,8 @@ def home():
     events = DB.get_open_events()
     added = request.args.get("added", type=int)
     added_event = next((e for e in events if e["event_id"] == added), None) if added else None
-    return render_template("home.html", events=events, added_event=added_event)
+    return render_template("home.html", events=events, closed_events=DB.get_closed_events(),
+                           added_event=added_event)
 
 
 @bp.get("/events/new")
@@ -55,17 +62,21 @@ def new_event():
 
 @bp.get("/events/<int:event_id>")
 def register_form(event_id):
-    event = DB.get_open_event(event_id)
+    event = DB.get_event(event_id)
     if not event:
         return render_template("error.html", title="找不到頁面", message=NOT_FOUND_MSG), 404
+    if event["status"] != "open":
+        return _closed_page(event)
     return render_template("register.html", event=event, values={}, error=None)
 
 
 @bp.post("/events/<int:event_id>/register")
 def register(event_id):
-    event = DB.get_open_event(event_id)
+    event = DB.get_event(event_id)
     if not event:
         return render_template("error.html", title="找不到頁面", message=NOT_FOUND_MSG), 404
+    if event["status"] != "open":
+        return _closed_page(event)
 
     name = request.form.get("name", "").strip()
     raw_phone = request.form.get("phone", "").strip()
@@ -79,8 +90,39 @@ def register(event_id):
         return fail("請輸入姓名（最多 50 字）。", 400)
     if not PHONE_RE.match(phone):
         return fail("連絡電話格式不正確，請輸入 8~13 位數字，例如 0912345678。", 400)
-    if DB.has_registered(event_id, phone):
-        return fail("這支電話已經報名過這場活動了，可到「查看我的報名」確認。", 409)
+    if DB.has_registered(event_id, name, phone):
+        return fail(f"「{name}」已經用這支電話報名過這場活動了，請勿重複報名。", 409)
 
     new_id = DB.add_registration(event_id, name, phone)
     return redirect(url_for("registrations.my_registrations", phone=phone, new=new_id))
+
+
+# ---- 活動報名清單（顯示目前報名人數）與截止報名 ----
+@bp.get("/events/<int:event_id>/registrations")
+def event_registrations(event_id):
+    event = DB.get_event(event_id)
+    if not event:
+        return render_template("error.html", title="找不到頁面", message=NOT_FOUND_MSG), 404
+    return render_template(
+        "event_registrations.html",
+        event=event,
+        rows=DB.get_event_registrations(event_id),
+        changed=request.args.get("changed"),
+    )
+
+
+@bp.post("/events/<int:event_id>/close")
+def close_event(event_id):
+    return _set_status(event_id, "closed")
+
+
+@bp.post("/events/<int:event_id>/reopen")
+def reopen_event(event_id):
+    return _set_status(event_id, "open")
+
+
+def _set_status(event_id, status):
+    if not DB.get_event(event_id):
+        return render_template("error.html", title="找不到頁面", message=NOT_FOUND_MSG), 404
+    DB.set_event_status(event_id, status)
+    return redirect(url_for("events.event_registrations", event_id=event_id, changed=status))

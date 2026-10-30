@@ -27,16 +27,46 @@ def _run(sql, args=None, fetch=True):
 
 
 # ---- 活動 ----
-def get_open_events():
-    """首頁：可報名的活動清單（含已報名人數）"""
+def _events_by_status(status):
     return _run(
         """SELECT e.*, COUNT(r.registration_id) AS reg_count
              FROM events e
              LEFT JOIN registrations r ON r.event_id = e.event_id
-            WHERE e.status = 'open'
+            WHERE e.status = %s
             GROUP BY e.event_id
-            ORDER BY e.event_date"""
+            ORDER BY e.event_date""",
+        (status,),
     )
+
+
+def get_open_events():
+    """首頁：可報名的活動清單（含目前報名人數）"""
+    return _events_by_status("open")
+
+
+def get_closed_events():
+    """首頁下方：已截止報名的活動（含報名人數）"""
+    return _events_by_status("closed")
+
+
+def get_event(event_id):
+    """單一活動（不論是否截止）；不存在回傳 None"""
+    if not 0 < event_id <= INT_MAX:
+        return None
+    rows = _run(
+        """SELECT e.*,
+                  (SELECT COUNT(*) FROM registrations r WHERE r.event_id = e.event_id) AS reg_count
+             FROM events e
+            WHERE e.event_id = %s""",
+        (event_id,),
+    )
+    return rows[0] if rows else None
+
+
+def set_event_status(event_id, status):
+    """截止報名（closed）或重新開放（open）"""
+    _run("UPDATE events SET status = %s WHERE event_id = %s RETURNING event_id",
+         (status, event_id), fetch=False)
 
 
 def get_open_event(event_id):
@@ -54,12 +84,25 @@ def get_open_event(event_id):
 
 
 # ---- 報名 ----
-def has_registered(event_id, phone):
+def has_registered(event_id, name, phone):
+    """重複報名檢查：同一活動中「同名且同電話」視為重複"""
     rows = _run(
-        "SELECT registration_id FROM registrations WHERE event_id = %s AND phone = %s",
-        (event_id, phone),
+        """SELECT registration_id FROM registrations
+            WHERE event_id = %s AND name = %s AND phone = %s""",
+        (event_id, name, phone),
     )
     return bool(rows)
+
+
+def get_event_registrations(event_id):
+    """某活動的報名清單（依報名先後）"""
+    return _run(
+        """SELECT registration_id, name, phone, created_at
+             FROM registrations
+            WHERE event_id = %s
+            ORDER BY created_at, registration_id""",
+        (event_id,),
+    )
 
 
 def add_registration(event_id, name, phone):

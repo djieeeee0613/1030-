@@ -103,6 +103,22 @@ a { color: var(--amber); }
 .split { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; align-items: start; margin-top: 8px; }
 .panel { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; }
 .form-narrow { max-width: 640px; margin-top: 8px; }
+.card-actions { display: grid; grid-template-columns: 1fr auto; gap: 10px; }
+.count-muted { background: var(--panel-2); color: var(--muted); }
+.row.row-closed { border-left-color: var(--line); }
+.row.row-closed h3 { color: var(--muted); }
+.badge-closed { background: rgba(239,106,91,.12); border-color: var(--err); color: #ffb3aa; font-size: 12.5px; vertical-align: middle; }
+.badge-open { background: rgba(127,176,105,.12); border-color: var(--ok); color: #cfe9c3; font-size: 12.5px; vertical-align: middle; }
+.stat { display: flex; align-items: baseline; gap: 8px; margin: 4px 0 16px; }
+.stat-num { font-size: 44px; font-weight: 800; line-height: 1; color: var(--amber); }
+.stat-label { color: var(--muted); }
+.btn-danger { background: transparent; color: var(--err); border-color: var(--err); }
+.btn-danger:hover { background: var(--err); border-color: var(--err); color: #fff; }
+.table-wrap { overflow-x: auto; }
+table.reg { width: 100%; border-collapse: collapse; font-size: 15px; }
+table.reg th, table.reg td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+table.reg th { color: var(--muted); font-weight: 700; font-size: 13.5px; }
+table.reg td.num { color: var(--muted); font-family: ui-monospace, Consolas, monospace; }
 .panel.center { text-align: center; margin-top: 32px; }
 .panel-title, .h-page { margin: 0 0 16px; font-size: 22px; }
 .h-event { margin: 6px 0 10px; font-size: 26px; line-height: 1.35; }
