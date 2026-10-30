@@ -1,0 +1,3 @@
+fastapi[standard]>=0.115
+pymysql>=1.1
+python-dotenv>=1.0
